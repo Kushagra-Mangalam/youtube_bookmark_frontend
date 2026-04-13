@@ -1,0 +1,577 @@
+/* ============================================================
+   KUSH YT BOOKMARKS — Global Styles
+   Tailwind CSS v4 + Custom Liquid Metal Aesthetic
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ─── CSS Custom Properties ─────────────────────────────── */
+:root {
+  /* Brand Colors */
+  --red: #ff0000;
+  --red-dim: rgba(255, 0, 0, 0.12);
+  --red-glow: rgba(255, 0, 0, 0.45);
+  --red-glow-soft: rgba(255, 0, 0, 0.2);
+  --cyan: #00f0ff;
+  --cyan-dim: rgba(0, 240, 255, 0.08);
+  --cyan-glow: rgba(0, 240, 255, 0.4);
+  --cyan-glow-soft: rgba(0, 240, 255, 0.18);
+
+  /* Surface Colors */
+  --black: #0a0a0a;
+  --black-soft: #0f0f0f;
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-hover: rgba(255, 255, 255, 0.07);
+  --glass-strong: rgba(255, 255, 255, 0.1);
+
+  /* Border Colors */
+  --border-cyan: rgba(0, 240, 255, 0.18);
+  --border-cyan-bright: rgba(0, 240, 255, 0.45);
+  --border-red: rgba(255, 0, 0, 0.25);
+  --border-white: rgba(255, 255, 255, 0.08);
+
+  /* Text Colors */
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.25);
+
+  /* Typography */
+  --font-heading: 'Rajdhani', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-display: 'Exo 2', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ─── Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Custom Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-cyan);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cyan);
+}
+
+/* ─── Typography Utilities ──────────────────────────────── */
+.font-heading { font-family: var(--font-heading); }
+.font-mono { font-family: var(--font-mono); }
+.font-display { font-family: var(--font-display); }
+
+/* ─── Glass Morphic Surface ─────────────────────────────── */
+.glass-surface {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-cyan);
+}
+
+.glass-surface-strong {
+  background: var(--glass-hover);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-cyan-bright);
+}
+
+/* ─── Glow Text Effects ─────────────────────────────────── */
+.glow-cyan {
+  text-shadow: 0 0 20px var(--cyan-glow), 0 0 40px var(--cyan-glow-soft);
+}
+.glow-red {
+  text-shadow: 0 0 20px var(--red-glow), 0 0 40px var(--red-glow-soft);
+}
+
+/* ─── Gradient Text ─────────────────────────────────────── */
+.gradient-text-cyan {
+  background: linear-gradient(135deg, #ffffff 20%, var(--cyan) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-red {
+  background: linear-gradient(135deg, #ffffff 10%, var(--red) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glass Liquid Fill Button ──────────────────────────── */
+.btn-glass {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid var(--border-cyan-bright);
+  background: var(--cyan-dim);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  user-select: none;
+}
+
+.btn-glass:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 30px var(--cyan-glow-soft), inset 0 0 30px rgba(0, 240, 255, 0.06);
+}
+
+/* The liquid fill element inside the button */
+.btn-liquid {
+  position: absolute;
+  bottom: -110%;
+  left: -10%;
+  width: 120%;
+  height: 220%;
+  border-radius: 50% 50% 0 0;
+  background: radial-gradient(
+    ellipse at 50% 80%,
+    rgba(0, 240, 255, 0.22),
+    rgba(0, 240, 255, 0.06)
+  );
+  transition: bottom 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.btn-glass:hover .btn-liquid {
+  bottom: -15%;
+}
+
+/* Splash state on click */
+.btn-glass.splashing .btn-liquid {
+  bottom: 0;
+  height: 100%;
+  border-radius: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(255, 0, 0, 0.45),
+    rgba(255, 0, 0, 0.15)
+  );
+  transition: bottom 0.12s ease, border-radius 0.12s ease, background 0.12s ease;
+}
+
+/* Button text must sit above liquid */
+.btn-glass > *:not(.btn-liquid) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Red variant */
+.btn-glass-red {
+  border-color: var(--border-red);
+  background: var(--red-dim);
+  color: var(--red);
+}
+.btn-glass-red:hover {
+  border-color: var(--red);
+  box-shadow: 0 0 30px var(--red-glow-soft), inset 0 0 30px rgba(255, 0, 0, 0.06);
+}
+.btn-glass-red .btn-liquid {
+  background: radial-gradient(ellipse at 50% 80%, rgba(255, 0, 0, 0.25), rgba(255, 0, 0, 0.06));
+}
+.btn-glass-red:hover .btn-liquid {
+  bottom: -15%;
+}
+
+/* ─── Bookmark Card ─────────────────────────────────────── */
+.bm-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-cyan);
+  border-radius: 12px;
+  transition:
+    transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.bm-card:hover {
+  border-color: rgba(0, 240, 255, 0.38);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(0, 240, 255, 0.1);
+}
+
+/* Shimmer sweep on hover */
+.bm-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(0, 240, 255, 0.04) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bm-card:hover::after {
+  transform: translateX(100%);
+}
+
+/* ─── Quick Actions Bar ─────────────────────────────────── */
+.quick-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 10, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 240, 255, 0.22);
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.bm-card:hover .quick-bar {
+  transform: translateY(0);
+}
+
+/* ─── Timestamp Pill ────────────────────────────────────── */
+.ts-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: var(--red-dim);
+  border: 1px solid var(--border-red);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--red);
+  white-space: nowrap;
+}
+
+.ts-pill.cyan {
+  background: var(--cyan-dim);
+  border-color: rgba(0, 240, 255, 0.22);
+  color: var(--cyan);
+}
+
+/* ─── Icon Button ────────────────────────────────────────── */
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-cyan);
+  background: var(--glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  box-shadow: 0 0 14px var(--cyan-glow-soft);
+}
+
+.icon-btn.danger:hover {
+  border-color: var(--red);
+  background: var(--red-dim);
+  box-shadow: 0 0 14px var(--red-glow-soft);
+}
+
+/* Liquid shine sweep on icon hover */
+.icon-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.4s ease;
+}
+
+.icon-btn:hover::before {
+  left: 125%;
+}
+
+/* ─── Skeleton Loading ───────────────────────────────────── */
+@keyframes skeleton-wave {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    to bottom,
+    var(--glass) 0%,
+    rgba(0, 240, 255, 0.08) 50%,
+    var(--glass) 100%
+  );
+  background-size: 100% 300%;
+  animation: skeleton-wave 2s ease infinite;
+}
+
+/* ─── Vortex Thumbnail ───────────────────────────────────── */
+.vortex-thumb {
+  position: absolute;
+  width: 118px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 240, 255, 0.22);
+  box-shadow:
+    0 0 20px rgba(0, 240, 255, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  transform-origin: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.vortex-thumb:hover {
+  box-shadow:
+    0 0 30px rgba(0, 240, 255, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.85);
+}
+
+.vortex-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 0, 0.12),
+    rgba(0, 240, 255, 0.06)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vortex-thumb:hover .vortex-thumb-overlay {
+  opacity: 1;
+}
+
+/* ─── Scan Line Animation ────────────────────────────────── */
+@keyframes scan-line {
+  0% { top: -2px; opacity: 0; }
+  5% { opacity: 0.4; }
+  95% { opacity: 0.4; }
+  100% { top: 100vh; opacity: 0; }
+}
+
+.scan-line {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  pointer-events: none;
+  z-index: 9999;
+  animation: scan-line 8s linear infinite;
+}
+
+/* ─── Notification Toast ─────────────────────────────────── */
+.notif-toast {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 10, 10, 0.95);
+  border: 1px solid var(--border-cyan);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.12);
+}
+
+.notif-toast.red {
+  border-color: var(--border-red);
+  color: var(--red);
+  box-shadow: 0 0 24px rgba(255, 0, 0, 0.12);
+}
+
+/* ─── Vortex Ring Animations ─────────────────────────────── */
+@keyframes ring-spin-cw {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes ring-spin-ccw {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 12px var(--red-glow); }
+  50%       { opacity: 0.55; box-shadow: 0 0 4px var(--red-glow); }
+}
+
+/* ─── Header status dot ──────────────────────────────────── */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red-glow);
+  animation: pulse-dot 2.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ─── Droplet Reveal (GSAP handles this, CSS just defines start) */
+.droplet-hidden {
+  opacity: 0;
+  transform: translateY(-18px) scale(0.94);
+}
+
+/* ─── Toggle Switch ──────────────────────────────────────── */
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-cyan);
+  background: var(--glass);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.toggle-track.active {
+  background: rgba(0, 240, 255, 0.18);
+  border-color: var(--cyan);
+  box-shadow: 0 0 14px var(--cyan-glow-soft);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), background 0.3s ease;
+}
+
+.toggle-track.active .toggle-thumb {
+  transform: translateX(20px);
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-glow);
+}
+
+/* ─── Sound toggle icon pulse ────────────────────────────── */
+@keyframes sound-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.sound-active {
+  animation: sound-pulse 1.5s ease infinite;
+}
+
+/* ─── Modal ──────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-panel {
+  background: #0f0f0f;
+  border: 1px solid var(--border-cyan);
+  border-radius: 16px;
+  box-shadow:
+    0 0 60px rgba(0, 240, 255, 0.12),
+    0 40px 80px rgba(0, 0, 0, 0.85);
+  width: 480px;
+  max-width: 92vw;
+}
+
+/* ─── Form field ──────────────────────────────────────────── */
+.field-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-cyan);
+  background: var(--glass);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.field-input:focus {
+  border-color: rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.1);
+}
+
+.field-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ─── Utility: no-scrollbar ──────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Misc ───────────────────────────────────────────────── */
+.cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  transition: left 0.08s ease, top 0.08s ease;
+}
