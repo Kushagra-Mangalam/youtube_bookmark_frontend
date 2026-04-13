@@ -110,6 +110,8 @@ export function AuthForm({ onAuthenticate }: Props) {
       if (response?.token?.access) {
         localStorage.setItem("access", response.token.access);
         localStorage.setItem("refresh", response.token.refresh);
+        // Set the auth flag that App.tsx expects
+        localStorage.setItem(AUTH_KEY, "true");
 
         // Animate out then authenticate
         gsap.to(panelRef.current, {
@@ -121,12 +123,37 @@ export function AuthForm({ onAuthenticate }: Props) {
           onComplete: onAuthenticate,
         });
       } else {
-        setError("Authentication failed : no token received");
+        setError("Authentication failed: No token received");
       }
     } catch (err: any) {
       console.error("Auth error:", err);
 
-      const message = err.response?.data?.error || "Connection to Vortex failed.";
+      // Error #31 Fix: Ensure the error we pass to state is always a string.
+      let message = "Connection to Vortex failed.";
+      const responseData = err.response?.data;
+
+      if (typeof responseData === 'string') {
+        message = responseData;
+      } else if (responseData?.error) {
+        // Handle { error: "..." } or { error: { message: "..." } }
+        message = typeof responseData.error === 'string' 
+          ? responseData.error 
+          : (responseData.error.message || JSON.stringify(responseData.error));
+      } else if (responseData?.message) {
+        // Handle { message: "..." }
+        message = responseData.message;
+      } else if (responseData && typeof responseData === 'object') {
+        // Handle field errors: { email: ["..."] }
+        const values = Object.values(responseData);
+        if (values.length > 0) {
+          const firstVal = values[0];
+          message = Array.isArray(firstVal) ? firstVal[0] : JSON.stringify(responseData);
+        }
+      } else if (err.message) {
+        // Fallback to axios error message if no response data
+        message = err.message;
+      }
+
       setError(message);
     }
   }
