@@ -1,13 +1,12 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://127.0.0.1:8000/api",
+    baseURL: '/api',
 });
-
 API.interceptors.request.use((config) => {
     const token = localStorage.getItem("access");
     if (token) {
-        config.headers.Authorizartion = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 })
@@ -21,7 +20,7 @@ API.interceptors.response.use((response) => response, async (error) => {
 
         if (refreshToken) {
             try {
-                const res = await axios.post("http://127.0.0.1:8000/api/token/refresh/", {
+                const res = await axios.post("/api/token/refresh/", {
                     refresh: refreshToken,
                 })
 
