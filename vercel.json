@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://youtube-bookmark-backend.onrender.com/api/:path*"
+      "source": "/api/(.*)",
+      "destination": "https://youtube-bookmark-backend.onrender.com/api/$1"
+    },
+    {
+      "source": "/((?!assets/).*)",
+      "destination": "/index.html"
     }
   ]
 }
