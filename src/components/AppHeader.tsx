@@ -23,6 +23,8 @@ interface Props {
   onToggleDemoMode: () => void;
   // Auth
   onLogout?: () => void;
+  // Refresh bookmarks from API
+  onRefresh?: () => void;
 }
 
 export function AppHeader({
@@ -35,6 +37,7 @@ export function AppHeader({
   demoMode,
   onToggleDemoMode,
   onLogout,
+  onRefresh,
 }: Props) {
   return (
     <header
@@ -249,6 +252,41 @@ export function AppHeader({
             <path d="M7 17L17 7M17 7H7M17 7v10" />
           </svg>
         </a>
+
+        {/* Sync/Refresh button */}
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            title="Sync bookmarks from server"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              border: '1px solid var(--border-cyan)',
+              background: 'var(--glass)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--cyan)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--cyan-dim)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-cyan)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--glass)';
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" strokeWidth="2" strokeLinecap="round">
+              <path d="M21.5 2v6h-6" />
+              <path d="M2.5 22v-6h6" />
+              <path d="M3.34 8A9.96 9.96 0 0 1 12 2c3.6 0 6.74 1.95 8.5 4.84" />
+              <path d="M20.66 16A9.96 9.96 0 0 1 12 22c-3.6 0-6.74-1.95-8.5-4.84" />
+            </svg>
+          </button>
+        )}
 
         {/* Add button */}
         <GlassLiquidFillButton onClick={onAdd} className="text-xs py-2 px-5">

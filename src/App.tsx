@@ -8,11 +8,11 @@
 //      - demoMode === 'empty'  → VortexArcView (semicircle scroll)
 //      - demoMode === 'loaded' → BookmarkVaultView (list/grid)
 //
-// Auth is demo-only (localStorage). In production you'd
-// replace with a real auth provider.
+// Bookmarks are fetched from the Django backend API on login
+// and on periodic refresh.
 // ============================================================
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -27,6 +27,7 @@ import { NotificationStack } from './components/NotificationStack';
 
 import { useSoundFX } from './hooks/useSoundFX';
 import { SAMPLE_BOOKMARKS, uid } from './utils/data';
+import { fetchAllBookmarks, deleteBookmarkFromAPI } from './utils/bookmarkService';
 import type { VideoBookmark, NotificationItem } from './types';
 
 // Register GSAP React plugin globally
@@ -36,26 +37,7 @@ gsap.registerPlugin(_useGSAP);
 // ─────────────────────────────────────────────────────────────
 // Persistence helpers
 // ─────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'kush_yt_bookmarks_v1';
 const AUTH_KEY = 'kush_yt_auth';
-
-function loadBookmarks(): VideoBookmark[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as VideoBookmark[];
-  } catch {
-    return [];
-  }
-}
-
-function saveBookmarks(bms: VideoBookmark[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bms));
-  } catch {
-    // quota exceeded or private mode — silent fail
-  }
-}
 
 function isAuthenticated(): boolean {
   try {
@@ -71,19 +53,39 @@ export default function App() {
   const [authed, setAuthed] = useState(isAuthenticated);
 
   // ── State ─────────────────────────────────────────────────
-  const [bookmarks, setBookmarks] = useState<VideoBookmark[]>(loadBookmarks);
+  const [bookmarks, setBookmarks] = useState<VideoBookmark[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // View mode: vortex arc vs vault list (only when bookmarks exist)
-  const [viewMode, setViewMode] = useState<'vortex' | 'vault'>(
-    bookmarks.length > 0 ? 'vortex' : 'vortex'
-  );
+  const [viewMode, setViewMode] = useState<'vortex' | 'vault'>('vortex');
 
   // ── Sound FX ──────────────────────────────────────────────
   const { playPlop, playSplash, playWhoosh } = useSoundFX(soundEnabled);
+
+  // ── Fetch bookmarks from API on auth ──────────────────────
+  const loadBookmarksFromAPI = useCallback(async () => {
+    if (!authed) return;
+    setLoading(true);
+    try {
+      const apiBookmarks = await fetchAllBookmarks();
+      setBookmarks(apiBookmarks);
+    } catch (err) {
+      console.error('Failed to load bookmarks:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [authed]);
+
+  // Fetch on mount and when auth changes
+  useEffect(() => {
+    if (authed) {
+      loadBookmarksFromAPI();
+    }
+  }, [authed, loadBookmarksFromAPI]);
 
   // ── Cursor glow (follow mouse) ────────────────────────────
   useGSAP(() => {
@@ -105,8 +107,13 @@ export default function App() {
   }, []);
 
   const handleLogout = useCallback(() => {
-    try { localStorage.removeItem(AUTH_KEY); } catch {}
+    try {
+      localStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
+    } catch {}
     setAuthed(false);
+    setBookmarks([]);
   }, []);
 
   // ── Notifications ─────────────────────────────────────────
@@ -123,27 +130,49 @@ export default function App() {
   const addBookmark = useCallback((bm: VideoBookmark) => {
     const updated = [bm, ...bookmarks];
     setBookmarks(updated);
-    saveBookmarks(updated);
     setViewMode('vortex');
     notify('↯ Injected into vortex', 'cyan');
     playPlop();
-  }, [bookmarks, notify, playPlop]);
+    // Refresh from API to sync
+    setTimeout(() => loadBookmarksFromAPI(), 500);
+  }, [bookmarks, notify, playPlop, loadBookmarksFromAPI]);
 
-  const deleteBookmark = useCallback((id: string) => {
+  const deleteBookmark = useCallback(async (id: string) => {
+    // Find the bookmark to delete — id is the videoId
+    const videoBookmark = bookmarks.find(b => b.id === id);
+    if (videoBookmark) {
+      // Delete all bookmarks for this video from the API
+      try {
+        for (const entry of videoBookmark.bookmarks) {
+          await deleteBookmarkFromAPI(videoBookmark.id, entry.timeSeconds);
+        }
+      } catch (err) {
+        console.error('Failed to delete from API:', err);
+      }
+    }
+
     const updated = bookmarks.filter(b => b.id !== id);
     setBookmarks(updated);
-    saveBookmarks(updated);
     notify('◌ Bookmark removed', 'red');
     playWhoosh();
   }, [bookmarks, notify, playWhoosh]);
 
-  const clearAll = useCallback(() => {
+  const clearAll = useCallback(async () => {
     if (!window.confirm('Clear all bookmarks from the vortex?')) return;
+    // Delete all from API
+    try {
+      for (const video of bookmarks) {
+        for (const entry of video.bookmarks) {
+          await deleteBookmarkFromAPI(video.id, entry.timeSeconds);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to clear all from API:', err);
+    }
     setBookmarks([]);
-    saveBookmarks([]);
     notify('⚡ Vortex cleared', 'red');
     playSplash();
-  }, [notify, playSplash]);
+  }, [bookmarks, notify, playSplash]);
 
   const playVideo = useCallback((url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -168,11 +197,17 @@ export default function App() {
   const handleBrowseTrending = useCallback(() => {
     const updated = SAMPLE_BOOKMARKS;
     setBookmarks(updated);
-    saveBookmarks(updated);
     setViewMode('vortex');
     notify('↯ Trending data injected into vortex', 'cyan');
     playSplash();
   }, [notify, playSplash]);
+
+  // Refresh bookmarks from API
+  const handleRefresh = useCallback(() => {
+    loadBookmarksFromAPI();
+    notify('↻ Syncing from vortex core...', 'cyan');
+    playPlop();
+  }, [loadBookmarksFromAPI, notify, playPlop]);
 
   // ──────────────────────────────────────────────────────────
   // RENDER: Landing page (not authenticated)
@@ -226,11 +261,40 @@ export default function App() {
         demoMode={viewMode === 'vortex' ? 'empty' : 'loaded'}
         onToggleDemoMode={handleToggleViewMode}
         onLogout={handleLogout}
+        onRefresh={handleRefresh}
       />
 
       {/* Main content */}
       <main style={{ position: 'relative', zIndex: 1 }}>
-        {!hasBookmarks ? (
+        {loading ? (
+          // Loading state
+          <div style={{
+            minHeight: '60vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: 16,
+          }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              border: '2px solid var(--border-cyan)',
+              borderTopColor: 'var(--cyan)',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <div style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              color: 'var(--text-muted)',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+            }}>
+              Syncing from vortex core...
+            </div>
+          </div>
+        ) : !hasBookmarks ? (
           // No bookmarks: show "The Void"
           <VortexEmptyState
             onBrowseTrending={handleBrowseTrending}
