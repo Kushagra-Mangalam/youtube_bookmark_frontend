@@ -29,7 +29,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { GlassLiquidFillButton } from './GlassLiquidFillButton';
-import { timeAgo } from '../utils/data';
+import { timeAgo } from '../utils/bookmarkService';
 import type { VideoBookmark } from '../types';
 
 interface Props {

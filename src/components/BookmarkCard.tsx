@@ -14,7 +14,7 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { MultiBookmarkHoverBar } from './MultiBookmarkHoverBar';
-import { timeAgo } from '../utils/data';
+import { timeAgo } from '../utils/bookmarkService';
 import type { VideoBookmark } from '../types';
 
 interface Props {

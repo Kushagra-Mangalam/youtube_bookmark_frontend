@@ -30,7 +30,8 @@ import { useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { GlassLiquidFillButton } from './GlassLiquidFillButton';
-import { VORTEX_VIDEO_IDS } from '../utils/data';
+
+const VORTEX_VIDEO_IDS = ['y2Kz5M-rS7g', 'vLnPwxZdW4Y', 'dQw4w9WgXcQ', 'dQw4w9WgXcQ'];
 
 interface Props {
   onBrowseTrending: () => void;
