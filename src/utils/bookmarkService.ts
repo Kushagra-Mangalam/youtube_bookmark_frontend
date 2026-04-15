@@ -120,7 +120,7 @@ export async function fetchAllBookmarks(): Promise<VideoBookmark[]> {
 
       return {
         id: videoId,
-        url: `https://www.youtube.com/watch?v=${videoId}`,
+        url: `https://www.youtube.com/watch?v=${videoId}&t=${Math.floor(bookmarkEntries[0].timeSeconds)}s`,
         title,
         channelName,
         thumbnail: buildThumbnail(videoId),
