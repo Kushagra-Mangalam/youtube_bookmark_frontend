@@ -304,18 +304,18 @@ export function VortexEmptyState({ onBrowseTrending, onAddManual }: Props) {
           // Rounded rect clip
           ctx.beginPath();
           const r = 6 * ghost.scale;
-          ctx.moveTo(-w/2 + r, -h/2);
-          ctx.lineTo(w/2 - r, -h/2);
-          ctx.quadraticCurveTo(w/2, -h/2, w/2, -h/2 + r);
-          ctx.lineTo(w/2, h/2 - r);
-          ctx.quadraticCurveTo(w/2, h/2, w/2 - r, h/2);
-          ctx.lineTo(-w/2 + r, h/2);
-          ctx.quadraticCurveTo(-w/2, h/2, -w/2, h/2 - r);
-          ctx.lineTo(-w/2, -h/2 + r);
-          ctx.quadraticCurveTo(-w/2, -h/2, -w/2 + r, -h/2);
+          ctx.moveTo(-w / 2 + r, -h / 2);
+          ctx.lineTo(w / 2 - r, -h / 2);
+          ctx.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+          ctx.lineTo(w / 2, h / 2 - r);
+          ctx.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+          ctx.lineTo(-w / 2 + r, h / 2);
+          ctx.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+          ctx.lineTo(-w / 2, -h / 2 + r);
+          ctx.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
           ctx.closePath();
           ctx.clip();
-          ctx.drawImage(img, -w/2, -h/2, w, h);
+          ctx.drawImage(img, -w / 2, -h / 2, w, h);
           ctx.restore();
 
           // Glow border
@@ -326,15 +326,15 @@ export function VortexEmptyState({ onBrowseTrending, onAddManual }: Props) {
           ctx.strokeStyle = 'rgba(0,240,255,0.3)';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.moveTo(-w/2 + r, -h/2);
-          ctx.lineTo(w/2 - r, -h/2);
-          ctx.quadraticCurveTo(w/2, -h/2, w/2, -h/2 + r);
-          ctx.lineTo(w/2, h/2 - r);
-          ctx.quadraticCurveTo(w/2, h/2, w/2 - r, h/2);
-          ctx.lineTo(-w/2 + r, h/2);
-          ctx.quadraticCurveTo(-w/2, h/2, -w/2, h/2 - r);
-          ctx.lineTo(-w/2, -h/2 + r);
-          ctx.quadraticCurveTo(-w/2, -h/2, -w/2 + r, -h/2);
+          ctx.moveTo(-w / 2 + r, -h / 2);
+          ctx.lineTo(w / 2 - r, -h / 2);
+          ctx.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+          ctx.lineTo(w / 2, h / 2 - r);
+          ctx.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+          ctx.lineTo(-w / 2 + r, h / 2);
+          ctx.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+          ctx.lineTo(-w / 2, -h / 2 + r);
+          ctx.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
           ctx.closePath();
           ctx.stroke();
           ctx.restore();
@@ -571,14 +571,14 @@ export function VortexEmptyState({ onBrowseTrending, onAddManual }: Props) {
         </p>
 
         {/* CTAs */}
-        <div className="void-cta" style={{ marginBottom: 12 }}>
+        {/* <div className="void-cta" style={{ marginBottom: 12 }}>
           <GlassLiquidFillButton onClick={onBrowseTrending}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
             </svg>
             Browse Trending Videos
           </GlassLiquidFillButton>
-        </div>
+        </div> */}
 
         <div className="void-cta">
           <GlassLiquidFillButton onClick={onAddManual} variant="red" className="text-xs py-2.5 px-6">
